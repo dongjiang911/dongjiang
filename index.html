@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FarmSense · 智慧农场</title><link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><span class="brand-mark">🌱</span><div><strong>FarmSense</strong><small>智慧农场管理平台</small></div></div>
+  <nav>
+    <button class="nav-item active" data-view="dashboard">📊 <span>农场总览</span></button>
+    <button class="nav-item" data-view="sensors">📡 <span>传感器</span></button>
+    <button class="nav-item" data-view="alerts">⚠️ <span>告警中心</span></button>
+    <button class="nav-item" data-view="settings">⚙️ <span>接入配置</span></button>
+  </nav>
+  <div class="connection-card"><span class="dot online"></span><div><strong>演示数据已连接</strong><small>数据每 5 秒刷新</small></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><p class="eyebrow">SMART FARM</p><h1 id="pageTitle">农场总览</h1></div><div class="top-actions"><span id="lastUpdated">刚刚更新</span><button id="refreshBtn" class="icon-btn">↻</button></div></header>
+
+<section id="dashboard" class="view active">
+<div class="hero"><div><span class="pill">● 运行正常</span><h2>让每一寸土地都被数据看见</h2><p>实时监测环境、土壤与设备状态，帮助农场更高效地灌溉、通风和管理作物。</p></div><div class="hero-illustration">🌾<span>☀️</span></div></div>
+<div class="metric-grid" id="metrics"></div>
+<div class="grid-2">
+<div class="panel"><div class="panel-head"><div><h3>环境趋势</h3><p>最近 24 小时 · 实时演示数据</p></div><select id="chartMetric"><option value="temperature">温度</option><option value="humidity">空气湿度</option><option value="soil">土壤湿度</option></select></div><div class="chart-wrap"><canvas id="trendChart"></canvas></div></div>
+<div class="panel"><div class="panel-head"><div><h3>区域状态</h3><p>各地块实时健康度</p></div></div><div id="zones" class="zone-list"></div></div>
+</div>
+<div class="panel"><div class="panel-head"><div><h3>最近传感器数据</h3><p>来自在线设备的最新读数</p></div><button class="text-btn" data-view-target="sensors">查看全部 →</button></div><div class="table-wrap"><table><thead><tr><th>设备</th><th>位置</th><th>指标</th><th>读数</th><th>状态</th><th>时间</th></tr></thead><tbody id="recentData"></tbody></table></div></div>
+</section>
+
+<section id="sensors" class="view"><div class="section-intro"><div><h2>传感器管理</h2><p>统一管理温湿度、土壤、水质与气象设备。</p></div><button class="primary" id="addSensorBtn">＋ 添加传感器</button></div><div class="sensor-grid" id="sensorGrid"></div></section>
+
+<section id="alerts" class="view"><div class="section-intro"><div><h2>告警中心</h2><p>及时发现异常环境和设备状态。</p></div><div class="filter-row"><button class="filter active">全部</button><button class="filter">未处理</button><button class="filter">已处理</button></div></div><div id="alertList" class="alert-list"></div></section>
+
+<section id="settings" class="view"><div class="section-intro"><div><h2>接入配置</h2><p>将真实传感器数据接入 FarmSense。</p></div></div>
+<div class="config-grid">
+<div class="panel"><h3>数据接入方式</h3><div class="protocol active"><div><strong>REST API</strong><p>适合网关或后端服务推送 JSON 数据。</p></div><span>推荐</span></div><div class="protocol"><div><strong>MQTT / WebSocket</strong><p>适合物联网设备实时上报。</p></div><span>可扩展</span></div><div class="protocol"><div><strong>CSV / 批量导入</strong><p>用于历史数据初始化与离线设备。</p></div><span>可用</span></div></div>
+<div class="panel"><h3>REST API 示例</h3><p class="muted">将传感器网关发送到你的后端 API。</p><pre id="apiExample"><code>POST /api/v1/sensors/telemetry
+Content-Type: application/json
+
+{
+  "deviceId": "TEMP-001",
+  "timestamp": "2026-11-22T14:30:00Z",
+  "metrics": {
+    "temperature": 24.6,
+    "humidity": 68,
+    "soilMoisture": 42
+  }
+}</code></pre><button id="copyApi" class="secondary">复制示例</button></div>
+</div>
+<div class="panel integration"><h3>接入架构</h3><div class="flow"><span>传感器</span><b>→</b><span>IoT 网关</span><b>→</b><span>REST / MQTT</span><b>→</b><span>数据服务</span><b>→</b><span>FarmSense App</span></div></div>
+</section>
+</main></div>
+
+<div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h3>添加传感器</h3><button id="closeModal">×</button></div>
+<form id="sensorForm"><label>设备名称<input required name="name" placeholder="例如：1号大棚温湿度计"></label><label>设备 ID<input required name="id" placeholder="例如：TEMP-004"></label><label>区域<select name="zone"><option>1号大棚</option><option>2号大棚</option><option>露天种植区</option><option>育苗区</option></select></label><label>传感器类型<select name="type"><option>温湿度</option><option>土壤湿度</option><option>光照</option><option>水质</option></select></label><div class="modal-actions"><button type="button" class="secondary" id="cancelModal">取消</button><button class="primary">保存设备</button></div></form>
+</div></div>
+<script src="./app.js"></script>
+</body></html>
