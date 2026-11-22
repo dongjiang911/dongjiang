@@ -1,34 +1,62 @@
 # FarmSense 智慧农场 App
 
-可直接运行的智慧农场前端 Demo，重点演示“传感器数据接入 + 实时监测 + 告警 + 设备管理”。
+智慧农场 Web App + Python/FastAPI 传感器数据服务。
 
-## 已实现
-- 农场总览：温度、空气湿度、土壤湿度、在线设备等核心指标
-- 环境趋势图与区域健康度
-- 传感器管理：设备状态、最新读数、新增设备
-- 告警中心
-- REST API / MQTT / WebSocket 接入说明
-- Demo 模拟数据每 5 秒刷新
+## 目录
+- `index.html` / `styles.css` / `app.js`：前端 App
+- `backend/main.py`：Python FastAPI IoT 数据服务
+- `backend/requirements.txt`：Python 依赖
 
-## 运行
+## 启动 Python 后端
+
+```bash
+cd backend
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+API 默认运行在 `http://localhost:8000`。
+
+## 启动前端
+
+在项目根目录运行：
+
 ```bash
 python -m http.server 8080
 ```
-然后访问 http://localhost:8080。
 
-## 接入真实传感器
-推荐架构：传感器 → IoT 网关 → MQTT/HTTP → 后端数据服务 → Web App。
+浏览器打开 `http://localhost:8080`。
 
-示例：
+前端会优先从 Python API 获取真实数据；API 不可用时自动使用演示数据。
+
+## 传感器上报
+
 ```http
-POST /api/v1/sensors/telemetry
+POST http://localhost:8000/api/v1/sensors/telemetry
 Content-Type: application/json
 
 {
   "deviceId": "TEMP-001",
   "timestamp": "2026-11-22T14:30:00Z",
-  "metrics": {"temperature": 24.6, "humidity": 68, "soilMoisture": 42}
+  "metrics": {
+    "temperature": 24.6,
+    "humidity": 68,
+    "soilMoisture": 42
+  }
 }
 ```
 
-当前前端使用模拟数据；生产环境可把刷新逻辑替换成 `fetch('/api/v1/sensors/latest')` 或 WebSocket/MQTT 网关推送。
+## 推荐真实硬件架构
+
+传感器（ESP32/Arduino） → MQTT/HTTP → Python 数据服务 → Web App。
+
+当前 Python 服务已经支持：
+- 设备最新数据
+- 历史遥测数据
+- 健康检查
+- 标准 JSON 遥测上报接口
+
+下一步可以继续加入 MQTT（如 Mosquitto + Python MQTT client）、SQLite/PostgreSQL 历史存储，以及自动灌溉/风机/补光灯控制。
